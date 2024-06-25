@@ -1,0 +1,7 @@
+.dockerignore
+Dockerfile
+Dockerfile_php:7.2-apache
+docker-compose.yml
+.gitattributes
+.gitignore
+.git

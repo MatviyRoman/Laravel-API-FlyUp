@@ -1,0 +1,17 @@
+pipelines:
+  branches:
+    master:
+      - step:
+          name: Deploy to production
+          script:
+              - pipe: atlassian/ssh-run:0.4.2
+                variables:
+                  SSH_USER: 'user'
+                  SERVER: '94.130.88.21'
+                  PORT: '2235'
+                  MODE: 'command'
+                  COMMAND: '
+                    cd /home/user/flyupdev/api && git pull &&
+                    cd /home/user/flyupdev/api && docker-compose up --build -d flyupdevapi --no-deps &&
+                  (echo "OK"; exit)'
+              - echo "Deployed"

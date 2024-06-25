@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  flyupdevapi:
+    container_name: flyupdev_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    tty: true
+    #working_dir: /var/www/html
+    ports: 
+      - "8083:80"
+    volumes:
+      - ./public:/var/www/html/public
+    depends_on:
+      - flyupdevdb
+    networks:
+      - flyupdev
+
+  flyupdevdb:
+    image: mariadb
+    container_name: flyupdev_db
+    restart: unless-stopped
+    tty: true
+    command: --default-authentication-plugin=mysql_native_password --tls-version "TLSv1.2" 
+    environment:
+      MYSQL_DATABASE: flyup_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: root
+    ports:
+      - "8084:3306"
+    volumes:
+      - flyupdevdb:/var/lib/mysql/
+      - ${PWD}/mysqlconf/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - flyupdev
+
+  flyupdevphpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: flyupdev_phpadmin
+    environment:
+      PMA_HOST: flyupdevdb
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    networks:
+      - flyupdev
+    depends_on:
+      - flyupdevdb
+
+volumes:
+  flyupdevdb:
+
+networks:
+  flyupdev:
